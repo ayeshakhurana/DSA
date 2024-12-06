@@ -1,0 +1,245 @@
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct tree{
+    struct tree* left;
+    int info;
+    struct tree* right;
+}bst;
+bst* create(bst* root, int data){
+    bst* new=(bst*)malloc(sizeof(bst));
+    if(new==NULL){
+        return root;
+    }
+    new->info=data;
+    new->right=new->left=NULL;
+    return new;
+}
+bst* insert(bst*root, int data){
+    if(root==NULL){
+        root=create(root,data);
+        return root;
+    }
+    else if(data > root->info){
+        root->right=insert(root->right, data);
+    }
+    else{
+        root->left=insert(root->left,data);
+    }
+    return root;
+}
+bst* find_successor(bst* root){
+    while(root && root->left!=NULL){
+        root=root->left;
+    }
+    return root;
+}
+bst* delete(bst* root,int data){
+    if(root==NULL){
+        return NULL;
+    }
+    bst *temp=NULL;
+    if(data > root->info){
+        root->right=delete(root->right, data);
+    }
+    else if(data < root->info){
+        root->left=delete(root->left,data);
+    }else{
+        if(root->right==NULL && root->left==NULL){
+            free(root);
+            return NULL;
+        }else if(root->left==NULL){
+            temp=root->right;
+            free(root);
+            return temp;
+        }else if(root->right==NULL){
+            temp=root->left;
+            free(root);
+            return temp;
+        }else{
+            temp=find_successor(root->right);
+            root->info=temp->info;
+            root->right=delete(root->right,temp->info);
+        }
+    }
+    return root;
+}
+int second_highest(bst* root){
+    if(root==NULL){
+        return 0;
+    }
+    bst* p1=NULL;
+    while(root->right!=NULL){
+        p1=root;
+        root=root->right;
+    }
+    if(root->left!=NULL){
+        root=root->left;
+        while(root->right!=NULL){
+            root=root->right;
+        }
+        printf("node with second highest value is: %d\n",root->info);
+    }
+    printf("node with second highest value is: %d\n",p1->info);
+    return 0;
+}
+int second_lowest(bst* root){
+    if(root==NULL){
+        return 0;
+    }
+    bst* p1=NULL;
+    while(root->left!=NULL){
+        p1=root;
+        root=root->left;
+    }
+    if(root->right!=NULL){
+        root=root->right;
+        while(root->left!=NULL){
+            root=root->left;
+        }
+        printf("node with second lowest value is: %d\n",root->info);
+    }
+    printf("node with second lowest value is: %d\n",p1->info);
+}
+int height(bst* root){
+    if(root==NULL){
+        return 0;
+    }
+    else{
+        int left=height(root->left);
+        int right=height(root->right);
+        return 1+ (left> right? left : right);
+    }
+}
+int count_left_nodes(bst* root){
+    if(root==NULL || root->left==NULL){
+        return 0;
+    }
+    root=root->left;
+    return 1+ count_left_nodes(root->left)+count_left_nodes(root->right);
+}
+void inorder(bst* root){
+    if(root==NULL){
+        return ;
+    }
+    inorder(root->left);
+    printf("%d \n ",root->info);
+    inorder(root->right);
+}
+void preorder(bst* root){
+    if(root==NULL){
+        return ;
+    }
+    printf("%d\n",root->info);
+    preorder(root->left);
+    preorder(root->right);
+}
+void postorder(bst* root){
+    if(root==NULL){
+        return ;
+    }
+    postorder(root->left);
+    postorder(root->right);
+    printf("%d\n",root->info);
+}
+int count_nodes(bst*root){
+    if(root==NULL){
+        return 0;
+    }
+    return 1+count_nodes(root->left)+count_nodes(root->right);
+}
+int count_leaf_nodes(bst* root){
+    if(root==NULL){
+        return 0;
+    }
+    if(root->right==NULL && root->left==NULL){
+        return 1;
+    }
+    return count_leaf_nodes(root->left)+count_leaf_nodes(root->right);
+}
+int one_child(bst* root){
+    if(root==NULL){
+        return 0;
+    }
+    if(root->right==NULL || root->left==NULL){
+        return 1;
+    }
+    return one_child(root->right)+one_child(root->left);
+}
+int internal_nodes(bst* root){
+    if(root==NULL){
+        return 0;
+    }
+    if(root->right!=NULL && root->left!=NULL){
+        return 1;
+    }
+    return internal_nodes(root->right)+internal_nodes(root->left);
+}
+int main(){
+    int ch,data,x,y,one,intt;
+    bst* root=NULL;
+    do{
+        printf("enter choice: \n 1.insert node \n 2.delete a node \n 3. find height \n 4.count nodes on left side \n 5.find second highest value\n 6. find second lowest value\n 7. count total nodes \n 8. count leaf nodes \n 9.inorder \n 10. preorder \n 11. postorder 12. count nodes with one child \n 13. count internal nodes \n choice: ");
+        scanf("%d",&ch);
+        switch(ch){
+            case 1: printf("enter data to be inserted: ");
+                    scanf("%d",&data);
+                    root=insert(root,data);
+                    printf("tree after insertion is : \n");
+                    inorder(root);
+                    break;
+            case 2:
+                    printf("enter data to be deleted: \n");
+                    scanf("%d",&data);
+                    root=delete(root,data);
+                    printf("tree after deletion is: \n");
+                    inorder(root);
+                    break;
+            case 3:
+                    printf("height of bst is: ");
+                    int x=height(root);
+                    printf("%d\n",x);
+                    break;
+            case 4: 
+                    printf("nodes on left hand side are: ");
+                    int y=count_left_nodes(root);
+                    printf("%d\n",y);
+                    break;
+            case 5:
+                    second_highest(root);
+                    break;
+            case 6:
+                    second_lowest(root);
+                    break;
+            case 7:
+                    x=count_nodes(root);
+                    printf("total number of nodes are: %d \n",x);
+                    break;;
+            case 8:
+                    y=count_leaf_nodes(root);
+                    printf("total number of leaf nodes are: %d\n ",y);
+                    break;
+            case 9:
+                    printf("inorder traversal is: \n");
+                    inorder(root);
+                    break;
+            case 10:
+                    printf("preorder traversal is: \n");
+                    preorder(root);
+                    break;
+            case 11:
+                    printf("postorder traversal is: \n");
+                    postorder(root);
+                    break;
+            case 12:
+                    one=one_child(root);
+                    printf("nodes with only one child are: %d\n",one);
+                    break;
+            case 13:
+                    intt=internal_nodes(root);
+                    printf("internal nodes are: %d\n",intt);
+                    break;
+
+        }
+    }while(ch!=14);
+    return 0;
+}
