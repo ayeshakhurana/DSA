@@ -1,0 +1,85 @@
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct snode{
+    int info;
+    struct snode* next;
+}sn;
+sn *insert(sn *head){
+    sn *temp;
+    temp=(sn*)malloc(sizeof(sn));
+    if(temp==NULL){
+        printf("memory not allocates");
+        exit(1);
+    }else if(head==NULL){
+        printf("enter element to be inserted at beginning : ");
+        scanf("%d",&temp->info);
+        temp->next=NULL;
+        head=temp;
+    }else{
+        printf("enter element to be inserted at beginning : ");
+        scanf("%d",&temp->info);
+        temp->next=head;
+        head=temp;
+    }
+    return head;
+}
+sn *merge(sn *head1, sn *head2){
+    sn *p1=head1, *p2=head2;
+    int temp;
+    while(p1->next!=NULL){
+        p1=p1->next;
+    }
+    p1->next=p2;
+    return head1;
+}
+sn *sort(sn *head){
+    sn *p1, *p2=NULL;
+    int swapped=1;
+    while(swapped){
+        swapped=0;
+        p1=head;
+    while(p1->next!=NULL){
+        p2=p1->next;
+        if(p1->info > p2->info){
+            int temp=p1->info;
+            p1->info=p2->info;
+            p2->info=temp;
+            swapped=1;
+        }
+        p1=p1->next;
+    }
+    }
+    return head;   
+}
+void display(sn *head){
+    sn *temp;
+    temp=head;
+    if(head==NULL){
+        printf("list is empty");
+        exit(1);
+    }
+    else{
+        while(temp!=NULL){
+            printf("%d\n",temp->info);
+            temp=temp->next;
+        }
+    }
+}
+int main(){
+    sn *head1=NULL, *head2=NULL;
+    int n1,n2;
+    printf("enter number of elements in list 1: ");
+    scanf("%d",&n1);
+    for(int i=0;i<n1;i++){
+        head1=insert(head1);
+    }
+    printf("enter number of elements in list 2: ");
+    scanf("%d",&n2);
+    for(int i=0;i<n2;i++){
+        head2=insert(head2);
+    }
+    head1=merge(head1,head2);
+    head1=sort(head1);
+    display(head1);
+    return 0;
+}
