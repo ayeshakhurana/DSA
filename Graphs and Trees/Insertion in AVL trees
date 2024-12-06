@@ -1,0 +1,105 @@
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct tree{
+    struct tree* left;
+    int info;
+    int height;
+    struct tree* right;
+}avl;
+int height(avl* node){
+    if(node==NULL){
+        return 0;
+    }
+    return 1+(height(node->left) > height(node->right) ? height(node->left) : height(node->right));
+}
+int balance_factor(avl* node){
+    if(node==NULL){
+        return 0;
+    }
+    return height(node->left)-height(node->right);
+}
+avl* create_node(int data){
+    avl* root=(avl*)malloc(sizeof(avl));
+    root->info=data;
+    root->height=1;
+    root->left=root->right=NULL;
+    return root;
+}
+avl* ll(avl* y){
+    avl*x, *z;
+    x=y->left;
+    z=x->right;
+    y->left=z;
+    x->right=y;
+    x->height=(height(x->left) > height(x->right) ? height(x->left) : height(x->right));
+    y->height=(height(y->left) > height(y->right) ? height(y->left) : height(y->right));
+    return x;    
+}
+avl* rr(avl* y){
+    avl*x , *z;
+    x=y->right;
+    z=x->left;
+    y->right=z;
+    x->left=y;
+    x->height=(height(x->left) > height(x->right) ? height(x->left) : height(x->right));
+    y->height=(height(y->left) > height(y->right) ? height(y->left) : height(y->right));
+    return x;
+}
+avl* insert_node(avl* root,int data){
+    if(root==NULL){
+        root=create_node(data);
+        return root;
+    }
+    if(data > root->info){
+        root->right=insert_node(root->right,data);
+    }else{
+        root->left=insert_node(root->left,data);
+    }
+    root->height=1+(height(root->left) > height(root->right) ? height(root->left) : height(root->right));
+    int x=balance_factor(root);
+    if(x < -1 && data > root->right->info){
+        return rr(root);
+    }
+    if(x < -1 && data < root->right->info){
+        root->right=ll(root->right);
+        return rr(root);
+    }
+    if (x > 1 && data < root->left->info){
+        return ll(root);
+    }
+    if(x > 1 && data > root->left->info){
+        root->left=rr(root->left);
+        return ll(root);
+    }
+    return root;
+}
+void inorder(avl* root){
+    if(root==NULL){
+        return ;
+    }
+    inorder(root->left);
+    printf("%d\n",root->info);
+    inorder(root->right);
+}
+void preorder(avl* root){
+    if(root==NULL){
+        return ;
+    }
+    printf("%d \n",root->info);
+    preorder(root->left);
+    preorder(root->right);
+}
+int main(){
+    avl* root=NULL;
+    int data;
+    do{
+        printf("enter element to be inserted: ");
+        scanf("%d",&data);
+        root=insert_node(root,data);
+        printf("inorder: \n");
+        inorder(root);
+        printf("preorder: \n");
+        preorder(root);
+    }while(1);
+    return 0;
+}
